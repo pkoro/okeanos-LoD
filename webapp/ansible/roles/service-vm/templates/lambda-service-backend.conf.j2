@@ -1,3 +1,8 @@
+Listen *:80
+Listen *:8082
+Listen *:8081
+
+
 <VirtualHost *:80>
 	# The ServerName directive sets the request scheme, hostname and port that
 	# the server uses to identify itself. This is used when creating
@@ -14,6 +19,15 @@
 
 	WSGIScriptAlias / {{ repository_download_path }}/okeanos-LoD/webapp/webapp/wsgi.py
 	WSGIPassAuthorization On
+
+	Header always set Access-Control-Allow-Origin: "http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr"
+	Header always set Access-Control-Allow-Credentials: true
+	Header always set Access-Control-Allow-Methods: "GET, POST, OPTIONS"
+	Header always set Access-Control-Allow-Headers "authorization"
+
+	RewriteEngine On
+	RewriteCond %{REQUEST_METHOD} OPTIONS
+	RewriteRule ^(.*)$ $1 [R=200,L]
 
 	# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
 	# error, crit, alert, emerg.
@@ -34,5 +48,55 @@
 	# after it has been globally disabled with "a2disconf".
 	#Include conf-available/serve-cgi-bin.conf
 </VirtualHost>
+
+<VirtualHost *:8082>
+
+        DocumentRoot /var/www/okeanos-LoD/webapp/swagger
+        ServerName swagger-json
+
+        # Other directives here
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        Header always set Access-Control-Allow-Origin: "*"
+        Header unset X-Frame-Options
+        Header always set Access-Control-Allow-Methods: "POST, PUT, DELETE, GET, OPTIONS"
+        Header always set Access-Control-Allow-Headers "accept,authorization,Origin,X-Requested-With, Content-Type, Access-Control-Allow-Origin"
+        Header always set Access-Control-Allow-Credentials: true
+
+
+        #limit request body size to 500MB
+        LimitRequestBody 524288000
+
+        # For most configuration files from conf-available/, which are
+        # enabled or disabled at a global level, it is possible to
+        # include a line for only one particular virtual host. For example the
+        # following line enables the CGI configuration for this host only
+        # after it has been globally disabled with "a2disconf".
+        #Include conf-available/serve-cgi-bin.conf
+
+</VirtualHost>
+
+<VirtualHost *:8081>
+
+        DocumentRoot /var/www/swagger-ui/dist
+        ServerName swagger-ui
+
+        # Other directives here
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        #limit request body size to 500MB
+        LimitRequestBody 524288000
+
+        # For most configuration files from conf-available/, which are
+        # enabled or disabled at a global level, it is possible to
+        # include a line for only one particular virtual host. For example the
+        # following line enables the CGI configuration for this host only
+        # after it has been globally disabled with "a2disconf".
+        #Include conf-available/serve-cgi-bin.conf
+
+</VirtualHost>
+
 
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
