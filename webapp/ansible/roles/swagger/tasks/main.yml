@@ -1,9 +1,9 @@
 ---
-  #- name: Download Swagger-ui code from Github.
-  #  git: repo={{ repository_url }}  dest={{ repository_download_path }}/swagger-ui update=yes version={{ repository_branch }}
+  - name: Download Swagger-ui code from Github.
+    git: repo={{ repository_url }}  dest={{ repository_download_path }}/swagger-ui update=yes version={{ repository_branch }}
 
-  #- name: Setup index file.
-  # template: src=index.html dest={{ repository_download_path }}/swagger-ui/dist/index.html
+  - name: Setup index file.
+    template: src=index.html dest={{ repository_download_path }}/swagger-ui/dist/index.html
 
   - name: Setup swagger.json file.
     template: src=swagger.json dest={{ repository_download_path }}/okeanos-LoD/webapp/swagger/swagger.json

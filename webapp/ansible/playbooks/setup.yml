@@ -13,3 +13,4 @@
     - service-vm
     - rabbitmq
     - celery
+    - swagger
