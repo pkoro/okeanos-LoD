@@ -7,7 +7,7 @@ basePath: /api
 schemes:
   - http
 paths:
-  /authenticate:
+  /authenticate/:
     get:
       description: |
         Get validation for a given ~okeanos token.
@@ -30,7 +30,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-  /lambda-instances:
+  /lambda-instances/:
     post:
       description: |
         Create a new lambda instance.
@@ -194,7 +194,7 @@ paths:
             $ref: '#/definitions/Error'
 
 
-  /apps:
+  /apps/:
     post:
       description: |
         Upload an application.

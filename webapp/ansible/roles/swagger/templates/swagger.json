@@ -4,13 +4,13 @@
         "title": "LoD API",
         "version": "0.1.0"
     },
-    "host": "{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr:8000"
+    "host": "{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr",
     "basePath": "/api",
     "schemes": [
         "http"
     ],
     "paths": {
-        "/authenticate": {
+        "/authenticate/": {
             "get": {
                 "description": "Get validation for a given ~okeanos token.\n",
                 "parameters": [
@@ -41,7 +41,7 @@
                 }
             }
         },
-        "/lambda-instances": {
+        "/lambda-instances/": {
             "post": {
                 "description": "Create a new lambda instance.\n",
                 "parameters": [
@@ -265,7 +265,7 @@
                 }
             }
         },
-        "/apps": {
+        "/apps/": {
             "post": {
                 "description": "Upload an application.\n",
                 "parameters": [
