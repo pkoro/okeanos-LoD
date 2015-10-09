@@ -2,6 +2,8 @@ import logging
 import argparse
 from fokia.vm_manager import VM_Manager
 from fokia.ansible_manager_minimal import Manager
+from fokia.utils import check_auth_token
+from kamaki.cli.config import Config as KamakiConfig
 import os
 
 logging.basicConfig(level=logging.INFO)
@@ -32,7 +34,8 @@ class ServiceVMManager(object):
     def __init__(self, auth_token):
         self.auth_token = auth_token
 
-    def service_vm_create(self, vcpus=4, ram=4096, disk=40,
+    def service_vm_create(self, vm_name='Service VM',
+                          vcpus=4, ram=4096, disk=40,
                           project_name='lambda.grnet.gr',
                           private_key_path=None, public_key_path=None):
         """
@@ -41,17 +44,51 @@ class ServiceVMManager(object):
         """
 
         provisioner = VM_Manager(auth_token=self.auth_token)
-        vm_name = 'Service VM'
         vm_id = provisioner.create_single_vm(vm_name=vm_name,
                                              vcpus=vcpus, ram=ram, disk=disk,
                                              project_name=project_name,
                                              public_key_path=public_key_path)
         hostname = 'snf-' + str(vm_id) + '.vm.okeanos.grnet.gr'
         group = 'service-vms'
+
+        self._patch_auth_token_ansible()
         ansible_manager = Manager(hostname, group, private_key_path)
         ansible_result = ansible_manager.run_playbook(
             playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'))
+
+        self._clean_up_token_ansible_patch()
         return ansible_result
+
+    def _patch_auth_token_ansible(self):
+        if self.auth_token is None:
+            # Load .kamakirc configuration
+            logger.info("Retrieving .kamakirc configuration")
+            self.config = KamakiConfig()
+            if not os.path.exists(self.config.path):
+                raise IOError('No auth token given, and .kamakirc does not exist! Aborting.')
+            cloud_section = self.config._sections['cloud'].get(self.config.get('global',
+                                                                               'default_cloud'))
+            if not cloud_section:
+                message = "Default Cloud was not found in your .kamakirc configuration file. " \
+                          "Currently you have available in your configuration these clouds: %s"
+                raise KeyError(message % (self.config._sections['cloud'].keys()))
+
+            # Get the authentication token
+            self.auth_token = cloud_section['token']
+
+        res, info = check_auth_token(self.auth_token)
+        uuid = None
+        if res:
+            uuid = info['access']['user']['id']
+        with open("../ansible/roles/service-vm/vars/main.yml", "a") as vars_file:
+            vars_file.write("user_uuid: {user_uuid}\n".format(user_uuid=uuid))
+
+    def _clean_up_token_ansible_patch(self):
+        file_lines = None
+        with open("../ansible/roles/service-vm/vars/main.yml", "r") as vars_file:
+            file_lines = vars_file.readlines()
+        with open("../ansible/roles/service-vm/vars/main.yml", "w") as vars_file:
+            vars_file.writelines([item for item in file_lines[:-1]])
 
     def service_vm_destroy(self, vm_id):
         """
@@ -88,6 +125,7 @@ if __name__ == "__main__":
                         choices=['create', 'start', 'stop', 'destroy'])
     parser.add_argument('--auth_token', type=str, dest='auth_token', required=False)
     parser.add_argument('--vm_id', type=int, dest='vm_id')
+    parser.add_argument('--vm_name', type=str, dest='vm_name', required=False)
     parser.add_argument('--vcpus', type=int, dest='vcpus', default='4',
                         choices=[1, 2, 4, 8])
     parser.add_argument('--ram', type=int, dest='ram', default='4096',
@@ -101,9 +139,10 @@ if __name__ == "__main__":
 
     sm = ServiceVMManager(args.auth_token)
     if args.action == 'create':
-        sm.service_vm_create(vcpus=args.vcpus, ram=args.ram, disk=args.disk,
-                                  project_name=args.project_name,
-                                  public_key_path=args.public_key_path)
+        sm.service_vm_create(vm_name=args.vm_name,
+                             vcpus=args.vcpus, ram=args.ram, disk=args.disk,
+                             project_name=args.project_name,
+                             public_key_path=args.public_key_path)
     elif args.vm_id is None:
         raise ValueError("VM id must be specified")
     else:
