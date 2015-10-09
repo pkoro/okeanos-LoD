@@ -14,3 +14,4 @@
     - rabbitmq
     - ember
     - celery
+    - swagger

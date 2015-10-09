@@ -1,0 +1,4 @@
+---
+repository_download_path: /var/www
+repository_url: https://github.com/swagger-api/swagger-ui.git
+repository_branch: master

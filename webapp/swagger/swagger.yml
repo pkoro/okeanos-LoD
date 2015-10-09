@@ -1,0 +1,680 @@
+swagger: '2.0'
+info:
+  title: LoD API
+  version: 0.1.0
+host: localhost:80
+basePath: /api
+schemes:
+  - http
+paths:
+  /authenticate/:
+    get:
+      description: |
+        Get validation for a given ~okeanos token.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+      tags:
+        - Authenticate
+      responses:
+        '200':
+          description: Successful response, toke is valid.
+          schema:
+            $ref: '#/definitions/Success200'
+
+        '401':
+          description: Unauthorized, token is invalid
+          schema:
+            $ref: '#/definitions/Error'
+
+  /lambda-instances/:
+    post:
+      description: |
+        Create a new lambda instance.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: Lambda Instance
+          in: body
+          description: The details of the Lambda Instance we want to create
+          required: true
+          schema:
+            $ref: '#/definitions/LambdaInstance'
+      tags:
+        - Lambda-Instances
+      responses:
+        '202':
+          description: Successful response, request accepted.
+          schema:
+            $ref: '#/definitions/SuccessCreate'
+        '401':
+          description: Unauthorized, invalid token.
+          schema:
+            $ref: '#/definitions/Error'
+
+    get:
+      description: |
+        Get all Lambda Instances.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: body parameters
+          in: body
+          description: Number of lambda instances on each page
+          required: false
+          schema:
+              $ref: '#/definitions/ListInstances'
+      tags:
+        - Lambda-Instances
+      responses:
+        '200':
+          description: Authentication is successful.
+          schema:
+            $ref: '#/definitions/SuccessList'
+        '202':
+          description: Successful response, request accepted.
+          schema:
+            $ref: '#/definitions/ListPagination'
+        '400':
+          description: Request failed.
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized, invalid token.
+          schema:
+            $ref: '#/definitions/Error'
+            
+  /lambda-instances/[lambda-instance-uuid]:
+    get:
+      description: |
+        Lambda instance details for the instance with this id.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: body parameters
+          in: body
+          description: Id of instance and filter.
+          required: true
+          schema:
+              $ref: '#/definitions/DetailsInstance'
+      tags:
+        - Lambda-Instances
+      responses:
+        '200':
+          description: Successful response, lambda instance exists with this id.
+          schema:
+            $ref: '#/definitions/SingleInstance'
+
+        '404':
+          description: Request failed, instance not found.
+          schema:
+            $ref: '#/definitions/Error'
+        
+        '401':
+          description: Unauthorized, invalid token.
+          schema:
+            $ref: '#/definitions/Error'
+    
+    post:
+      description: |
+        Performs a specified action on a specified lambda instance.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: body parameters
+          in: body
+          description: Id of instance and action.
+          required: true
+          schema:
+              $ref: '#/definitions/ActionInstance'
+      tags:
+        - Lambda-Instances
+      responses:
+        '200':
+          description: Successful response, lambda instance exists with this id.
+          schema:
+            $ref: '#/definitions/Status202'
+
+        '404':
+          description: Request failed, instance not found.
+          schema:
+            $ref: '#/definitions/Error'
+        
+        '401':
+          description: Unauthorized, invalid token.
+          schema:
+            $ref: '#/definitions/Error'
+    
+    delete:
+      description: |
+        Destroys a specified lambda instance.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: lambda-instance-id
+          in: body
+          description: Id of instance.
+          required: true
+          schema:
+              $ref: '#/definitions/ApplicationId'
+      tags:
+        - Lambda-Instances
+      responses:
+        '200':
+          description: Successful response, request accepted.
+          schema:
+            $ref: '#/definitions/Status202'
+
+        '404':
+          description: Request failed, instance not found.
+          schema:
+            $ref: '#/definitions/Error'
+        
+        '401':
+          description: Unauthorized, invalid token.
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /apps/:
+    post:
+      description: |
+        Upload an application.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: body parameters
+          in: body
+          description: Description,file,project name and type.
+          required: true
+          schema:
+            $ref: '#/definitions/UploadApplication'
+      tags:
+        - Apps
+      responses:
+        '202':
+          description:  Successful response, request accepted.
+          schema:
+            $ref: '#/definitions/SuccessCreate'
+
+        '401':
+          description: Request failed, unauthorized.
+          schema:
+            $ref: '#/definitions/Error'
+
+        '400':
+          description: Bad request.
+          schema:
+            $ref: '#/definitions/Error'
+            
+    get:
+      description: |
+        Lists all applications.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: body parameters
+          in: body
+          description: Limit and offset of listing.
+          required: false
+          schema:
+            $ref: '#/definitions/ListInstances'
+      tags:
+        - Apps
+      responses:
+        '200':
+          description:  Successful response, request accepted.
+          schema:
+            $ref: '#/definitions/SuccessList'
+        
+        '202':
+          description:  Successful response, request accepted.
+          schema:
+            $ref: '#/definitions/ListPagination'
+
+        '401':
+          description: Request failed, unauthorized.
+          schema:
+            $ref: '#/definitions/Error'
+
+        '400':
+          description: Bad request.
+          schema:
+            $ref: '#/definitions/Error'
+  
+  /apps/[application-id]:
+    get:
+      description: |
+        Lists the deployed application on the lambda instance.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: body parameters
+          in: body
+          description: Instance id, limit and offset of listing.
+          required: true
+          schema:
+            $ref: '#/definitions/ListApps'
+      tags:
+        - Apps
+      responses:
+        '202':
+          description: Successful response, request accepted.
+          schema:
+            $ref: '#/definitions/Status202'
+
+        '401':
+          description: Request failed, unauthorized.
+          schema:
+            $ref: '#/definitions/Error'
+
+        '404':
+          description: Bad request, application not found.
+          schema:
+            $ref: '#/definitions/Error'
+    
+    delete:
+      description: |
+        Delete an uploaded application.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: application-id
+          in: body
+          description: The id of the specified application.
+          required: true
+          schema:
+            $ref: '#/definitions/ApplicationId'
+      tags:
+        - Apps
+      responses:
+        '202':
+          description: Successful response, request accepted.
+          schema:
+            $ref: '#/definitions/Status202'
+
+        '401':
+          description: Request failed, unauthorized.
+          schema:
+            $ref: '#/definitions/Error'
+
+        '404':
+          description: Bad request, application not found.
+          schema:
+            $ref: '#/definitions/Error'
+
+  /apps/[application-id]/deploy:
+    post:
+      description: |
+        Deploys an application on a specified lambda instance.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: body parameters.
+          in: body
+          description: The id of the specified application and lambda instance.
+          required: true
+          schema:
+            $ref: '#/definitions/ApplicationUpload'
+      tags:
+        - Apps
+      responses:
+        '202':
+          description: Successful response, request accepted.
+          schema:
+            $ref: '#/definitions/Status202'
+
+        '401':
+          description: Request failed, unauthorized.
+          schema:
+            $ref: '#/definitions/Error'
+
+        '404':
+          description: Bad request, application not found.
+          schema:
+            $ref: '#/definitions/Error'
+
+  /apps/[application-id]/withdraw:
+    post:
+      description: |
+        Withdraws an application from a specified lambda instance.
+      parameters:
+        - name: Authorization
+          in: header
+          description: A string "Token " followed by the token value we want to authenticate
+          required: true
+          type: string
+        - name: body parameters.
+          in: body
+          description: The id of the specified application and lambda instance.
+          required: true
+          schema:
+            $ref: '#/definitions/ApplicationUpload'
+      tags:
+        - Apps
+      responses:
+        '202':
+          description: Successful response, request accepted.
+          schema:
+            $ref: '#/definitions/Status202'
+
+        '401':
+          description: Request failed, unauthorized.
+          schema:
+            $ref: '#/definitions/Error'
+
+        '404':
+          description: Bad request, application not found.
+          schema:
+            $ref: '#/definitions/Error'
+
+
+definitions:
+
+  ApplicationId:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: the id of the application
+
+  Error:
+    type: object
+    title: errors
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      details:
+        type: string
+
+
+  Success200:
+    type: object
+    title: " "
+    properties:
+      status:
+        type: integer
+        format: int32
+      result:
+        type: string
+
+
+  Status202:
+    type: object
+    title: " "
+    properties:
+      code:
+        type: integer
+        format: int32
+      short-description:
+        type: string
+
+
+  Data:
+    type: object
+    title: " "
+    properties:
+      id:
+        type: integer
+      links:
+        type: string
+
+
+  ListData:
+    type: object
+    title: " "
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+
+
+  SuccessCreate:
+    type: object
+    title: " "
+    properties:
+      status:
+        $ref: '#/definitions/Status202'
+      data:
+        $ref: '#/definitions/Data'
+
+
+  SuccessList:
+    type: object
+    title: " "
+    properties:
+      status:
+        $ref: '#/definitions/Status202'
+      data:
+        $ref: '#/definitions/ListData'
+
+  
+  ApplicationUpload:
+    type: object
+    title: " "
+    properties:
+      application-id:
+        description: The id of the application to be deployed.
+        type: integer
+      lambda-instance-id:
+        description: The id of the lambda instance on which the application will be deployed.
+        type: integer
+
+
+  ListInstances:
+    type: object
+    title: " "
+    properties:
+      limit:
+        type: integer
+        format: int32
+        description: number of items on each page
+      offset:
+        type: integer
+        format: int32
+        description: the first item of the page
+  
+  ListApps:
+    type: object
+    title: " "
+    properties:
+      lambda-instance-id:
+        type: integer
+        description: id of the lambda instance.
+      limit:
+        type: integer
+        format: int32
+        description: number of items on each page
+      offset:
+        type: integer
+        format: int32
+        description: the first item of the page      
+  
+  ActionInstance:
+    type: object
+    title: " "
+    properties:
+      lambda-instance-id:
+        type: integer
+        description: The id of the specified lambda instance.
+      action:
+        type: string
+        description: The action to perform on the lambda instance.
+
+
+  DetailsInstance:
+    type: object
+    title: " "
+    properties:
+      lambda-instance-id:
+        type: integer
+        description: The id of the specified lambda instance.
+      filter:
+        type: string
+        description:  Specifies which details to return.
+
+
+  LambdaInstance:
+    type: object
+    properties:
+      instance_name:
+        type: string
+        description: "Name of the lambda instance"
+      master_name:
+        type: string
+        description: "Name of the master node"
+      slaves:
+        type: integer
+        description: "Number of slaves"
+        format: int32
+      vcpus_master:
+        type: integer
+        description: "Number of CPUs of the master node"
+        format: int32
+      vcpus_slave:
+        type: integer
+        description: "Number of CPUs of each slave node"
+        format: int32
+      ram_master:
+        type: integer
+        description: "Amount of RAM of master node in MB"
+        format: int32
+      ram_slave:
+        type: integer
+        description: "Amount of RAM of each slave node in MB"
+        format: int32
+      disk_master:
+        type: integer
+        description: "Amount of HDD space of master node in GB"
+        format: int32
+      disk_slave:
+        type: integer
+        description: "Amount of HDD space of each slave node in GB"
+        format: int32
+      ip_allocation:
+        type: string
+        description: "Allocation of public ips. Choose between none, master, all"
+      network_request:
+        type: integer
+        description: "Number of private networks"
+        format: int32
+      project_name:
+        type: string
+        description: "Name of the project"
+       
+  
+  Pagination:
+    type: object
+    properties:
+      count:
+        type: integer
+        description: number of items
+        format: int32
+      next:
+        type: string
+        description: url for the next instance
+      previous:
+        type: string
+        description: url for the previous instance
+  
+  
+  ListPagination:
+    type: object
+    properties:
+      status:
+        $ref: '#/definitions/Status202'
+      data:
+        $ref: '#/definitions/ListData'
+      pagination:
+        $ref: '#/definitions/Pagination'
+        
+  
+  Status:
+    type: object
+    properties:
+      message:
+        type: string
+        description: Message of the status.
+      code:
+        type: integer
+        description: Code of the status.
+        format: int32
+      details:
+        type: string
+        description: Additional details about the status.
+      failure_message:
+        type: string
+        description: Failure message of the status.
+  
+  
+  SingleInstance:
+    type: object
+    title:  info
+    properties:
+      id:
+        type: integer
+        description: The id of the this lambda instance.
+      name:
+        type: string
+        description: The name of the Lambda Instance.
+      instance_info:
+        type: object
+        $ref: '#/definitions/LambdaInstance'
+      status:
+        type: object
+        $ref: '#/definitions/Status'
+
+  
+  UploadApplication:
+    type: object
+    properties:
+      description:
+        type: string
+        description: A description of the application.
+      file:
+        type: string
+        description: The application file
+      type:
+        type: string
+        description: The application type (batch/streaming).
+      project_name:
+        type: string
+        description: The ~okeanos project name that has the needed quotas on Pithos.
+  

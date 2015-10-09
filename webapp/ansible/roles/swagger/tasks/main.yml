@@ -1,0 +1,15 @@
+---
+  - name: Download Swagger-ui code from Github.
+    git: repo={{ repository_url }} force=yes
+         dest={{ repository_download_path }}/swagger-ui
+         update=yes version={{ repository_branch }}
+
+  - name: Setup index file.
+    template: src=index.html.j2 dest={{ repository_download_path }}/swagger-ui/dist/index.html
+
+  - name: Create directory ..okeanos-LoD/webapp/swagger
+    file: path={{ repository_download_path }}/okeanos-LoD/webapp/swagger
+          state=directory mode=0775 owner=celery group=celery
+
+  - name: Setup swagger.json file.
+    template: src=swagger.json.j2 dest={{ repository_download_path }}/okeanos-LoD/webapp/swagger/swagger.json
