@@ -1,4 +1,14 @@
+
+
+
+`master branch:` [![master Status](https://api.travis-ci.org/grnet/okeanos-LoD.svg?brach=master)](https://travis-ci.org/grnet/okeanos-LoD/)
+
+
+`devel branch:` [![devel Status](https://api.travis-ci.org/grnet/okeanos-LoD.svg?brach=devel)](https://travis-ci.org/grnet/okeanos-LoD/)
+
+
 # okeanos-LoD
+
 
 ~okeanos Lambda on Demand project software repository. Lambda on Demand (or LoD for brevity) is a λ architecture offering by GRNET running on top of the ~okeanos public IaaS cloud service. 
 
