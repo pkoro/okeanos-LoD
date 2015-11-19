@@ -70,7 +70,7 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../fokia/description/">Usage</a>
+        <a class="" href="../../fokia/usage/">Usage</a>
         
     </li>
 
@@ -337,11 +337,7 @@
           <div role="main">
             <div class="section">
               
-                <hr />
-<p>title: API | application list deployed
-description: Lists the deployed application on the lambda instance</p>
-<hr />
-<h1 id="api-application-list-deployed-description">API - application list deployed - Description</h1>
+                <h1 id="api-application-list-deployed-description">API - application list deployed - Description</h1>
 <p>application list deployed call, given an authentication token through the header Authorization,
 will firstly check the validity of the token. If the token is invalid, the API will reply
 with a "401 Unauthorized" code. If the token is valid, the API will check if the specified lambda instance exists. If it doesn't, the API will response with a "404 Not Found" code. If the specified lambda instance exists, the API will return all the applications deployed on that lambda instance in JSON format along with a "200 OK" code. If there are no lambda instances the array of the returned applications will be empty. Applications can be viewed in pages with a specified number of instances per page. This is possible by specifying the "limit" and "offset" GET variables on the URL of the call(offset can be ommited). If "offset" is specified without "limit", or has a zero or negative value, it will be ignored. If "limit" is less than zero, the API will reply with a "400 Bad Request" code.</p>
