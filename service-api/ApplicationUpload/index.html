@@ -295,6 +295,28 @@
 <li>
           
             <li>
+    <ul class="subnav">
+    <li><span>Images</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../vm-images/service/">Service VM</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../vm-images/lambda/">Lambda nodes</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
     <li class="toctree-l1 ">
         <a class="" href="../../about/license/">License</a>
         
@@ -434,13 +456,13 @@ and will start uploading the provided application to Pithos+.</p>
 </table>
 <h2 id="example">Example</h2>
 <p>In this example we are going to upload an application with description "My application", file
-name "test_project" and project name "lambda.grnet.gr".</p>
+name "test_project" and project name "project.grnet.gr".</p>
 <p>The request in curl</p>
 <pre><code>curl -X POST -H &quot;Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY&quot; \
  -F &quot;description=My application&quot;  \
  -F &quot;file=@batch-1.0-jar-with-dependencies.jar&quot; \
  -F &quot;type=batch&quot; \
- -F &quot;project_name=lambda.grnet.gr&quot; \
+ -F &quot;project_name=project.grnet.gr&quot; \
  -F &quot;execution_environment_name=Batch&quot; \
  'https://&lt;hostname&gt;/api/apps/'
 </code></pre>

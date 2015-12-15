@@ -295,6 +295,28 @@
 <li>
           
             <li>
+    <ul class="subnav">
+    <li><span>Images</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../vm-images/service/">Service VM</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../vm-images/lambda/">Lambda nodes</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
     <li class="toctree-l1 ">
         <a class="" href="../../about/license/">License</a>
         
@@ -489,7 +511,7 @@ instance creation, the API will reply with the details of the cluster in creatio
 <td>Name of the project</td>
 <td><code>Yes</code></td>
 <td>None</td>
-<td>lambda.grnet.gr</td>
+<td>project.grnet.gr</td>
 </tr>
 <tr>
 <td>public_key_name</td>
@@ -505,7 +527,8 @@ instance creation, the API will reply with the details of the cluster in creatio
 <p>The request in curl</p>
 <pre><code>curl -X POST -H &quot;Content-Type: application/json&quot; \
  -H &quot;Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR&quot; \
- -d '{&quot;project_name&quot;: &quot;lambda.grnet.gr&quot;, &quot;instance_name&quot;: &quot;My first Lambda Instance&quot;, &quot;network_request&quot;: 1,\
+ -d '{&quot;project_name&quot;: &quot;project.grnet.gr&quot;, &quot;instance_name&quot;: &quot;My first Lambda Instance&quot;,
+ &quot;network_request&quot;: 1,\
  &quot;master_name&quot;: &quot;lambda-master&quot;, &quot;vcpus_master&quot;: 4, &quot;disk_slave&quot;: 40, &quot;slaves&quot;: 1, &quot;ram_slave&quot;: 4096, \
  &quot;ram_master&quot;: 4096, &quot;vcpus_slave&quot;: 4, &quot;ip_allocation&quot;: &quot;master&quot;, &quot;disk_master&quot;: 40}' \
  'https://&lt;hostname&gt;/api/lambda-instance/'
