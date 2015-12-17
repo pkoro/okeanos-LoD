@@ -606,44 +606,59 @@
             "title": "Count Lambda Applications"
         }, 
         {
-            "location": "/vm-images/service/", 
+            "location": "/admin/service/", 
             "text": "Service VM image creation\n\n\nDescription\n\n\nThis guide describes how to generate and publish a Lambda service VM images on the ~okeanos public cloud. In order to create the image file a custom script that uses \nsnf-image-creator\n in the backend has been developed.\n\n\nThe create_image.sh shell script\n\n\nThe script responsible for creating a Service VM image. It must be run on a service VM. It sets up the default site, enables the ansible-vm-init init script, then runs snf-image-creator, to bundle the host. We will use this script in Step 6 below. \n\n\nSteps\n\n\n\n\nInstall the Fokia library. To install Fokia and its dependencies, consult the \ninstallation guide\n.\n\n\nNavigate to the Service VM manager folder: \ncd \nproject_directory\n/webapp/manager\n.\n\n\nCreate a new Service VM, by issuing the following command:\n\npython service_vm_manager.py --action image_creation --project-name \n~okeanos project name\n --auth-token \n~okeanos auth token\n\n\nAfter the service_vm_manager finishes successfully, login to the created VM using ssh.\n\n\nNavigate to the following folder on the Service VM: \n\ncd /var/www/okeanos-LoD/webapp/image\n\n\nExecute \n./create_image.sh\n.\n\n\nsnf-image-creator will run behind the scenes to bundle the host. Insert the required image properties, and\n~okeanos credentials, to register your new image on the ~okeanos cloud. \n\n\n\n\nThe recommended image name to use is \nLambda Service VM YYYYMMDD\n (e.g. \nLambda Service VM 20151219\n). \n\n\nFor more information about using snf-image-creator, consult the \nrelevant documentation\n.", 
-            "title": "Service VM"
+            "title": "Service VM image"
         }, 
         {
-            "location": "/vm-images/service/#service-vm-image-creation", 
+            "location": "/admin/service/#service-vm-image-creation", 
             "text": "", 
             "title": "Service VM image creation"
         }, 
         {
-            "location": "/vm-images/service/#description", 
+            "location": "/admin/service/#description", 
             "text": "This guide describes how to generate and publish a Lambda service VM images on the ~okeanos public cloud. In order to create the image file a custom script that uses  snf-image-creator  in the backend has been developed.  The create_image.sh shell script  The script responsible for creating a Service VM image. It must be run on a service VM. It sets up the default site, enables the ansible-vm-init init script, then runs snf-image-creator, to bundle the host. We will use this script in Step 6 below.", 
             "title": "Description"
         }, 
         {
-            "location": "/vm-images/service/#steps", 
+            "location": "/admin/service/#steps", 
             "text": "Install the Fokia library. To install Fokia and its dependencies, consult the  installation guide .  Navigate to the Service VM manager folder:  cd  project_directory /webapp/manager .  Create a new Service VM, by issuing the following command: python service_vm_manager.py --action image_creation --project-name  ~okeanos project name  --auth-token  ~okeanos auth token  After the service_vm_manager finishes successfully, login to the created VM using ssh.  Navigate to the following folder on the Service VM:  cd /var/www/okeanos-LoD/webapp/image  Execute  ./create_image.sh .  snf-image-creator will run behind the scenes to bundle the host. Insert the required image properties, and\n~okeanos credentials, to register your new image on the ~okeanos cloud.    The recommended image name to use is  Lambda Service VM YYYYMMDD  (e.g.  Lambda Service VM 20151219 ).   For more information about using snf-image-creator, consult the  relevant documentation .", 
             "title": "Steps"
         }, 
         {
-            "location": "/vm-images/lambda/", 
+            "location": "/admin/lambda/", 
             "text": "Lambda Instance images creation\n\n\nDescription\n\n\nThis guide describes how to generate and publish Lambda master and slaves images on the ~okeanos public cloud.\n\n\nIn the steps that follow we will use the \nsnf-image-creator\n tool to create and publish the images.\n\n\nSteps\n\n\n\n\nInstall the Fokia library. To install Fokia and its dependencies, consult the \ninstallation guide\n.\n\n\nNavigate to the fokia library folder: \ncd \nproject_directory\n/core/fokia\n.\n\n\nIn order to bootstrap a minimal Lambda Instance (1 master and 1 slave node), which we will use for the image creation, execute the following command:\n\npython lambda_instance_manager.py --image-creation --project-name \n~okeanos project name\n --auth-token \n~okeanos auth token\n\n(Note that no services will be started on these two hosts as we are using the --image-creation flag.)\n\n\nAfter \nlambda_instance_manager.py\n finishes a Lambda master and slave nodes will be available on your cyclades account. You will be able to login using ssh from the system, where you run the \nlambda_instance_manager.py\n command.\n\n\nTo be able to upload the Lambda slave image to the ~okeanos cloud, you must assign a public IP to the slave node\n1\n (the master node already has a public IP by default).\n\n\nLogin (using ssh) onto the Lambda master and slave nodes respectively. On each host, execute:\n\nrm -f /root/* \n snf-image-creator /\n\n\nsnf-image-creator\n will run and bundle the host. Insert the required image properties, and ~okeanos credentials, to register your new image on the ~okeanos cloud. The recommended Lambda master image name to use is: \nLambda master YYYYMMDD\n (e.g. \nLambda master 20151219\n). The recommended Lambda slave image name to use is: \nLambda slave YYYYMMDD\n (e.g. \nLambda slave 20151219\n). For more information about using snf-image-creator, consult the \nrelevant documentation\n.\n\n\nOn the source code repository edit the \nwebapp/ansible/roles/service-vm/templates/settings.py.j2\n file, changing the \nMASTER_IMAGE_ID\n and \nSLAVE_IMAGE_ID\n variables to the new image ids\n2\n for your changes to take effect. \n\n\n\n\n1\n There is a bug that causes a public IP not to attach correctly, if the node has previously been attached to a private network. In that case, de-attach the Lambda slave node from the lambda-vpn, attach the public IP, then re-attach it to the lambda-vpn.\n\n\n2\n To get the ~okeanos image ids, one can issue \nkamaki image list\n.", 
-            "title": "Lambda nodes"
+            "title": "Lambda nodes images"
         }, 
         {
-            "location": "/vm-images/lambda/#lambda-instance-images-creation", 
+            "location": "/admin/lambda/#lambda-instance-images-creation", 
             "text": "", 
             "title": "Lambda Instance images creation"
         }, 
         {
-            "location": "/vm-images/lambda/#description", 
+            "location": "/admin/lambda/#description", 
             "text": "This guide describes how to generate and publish Lambda master and slaves images on the ~okeanos public cloud.  In the steps that follow we will use the  snf-image-creator  tool to create and publish the images.", 
             "title": "Description"
         }, 
         {
-            "location": "/vm-images/lambda/#steps", 
+            "location": "/admin/lambda/#steps", 
             "text": "Install the Fokia library. To install Fokia and its dependencies, consult the  installation guide .  Navigate to the fokia library folder:  cd  project_directory /core/fokia .  In order to bootstrap a minimal Lambda Instance (1 master and 1 slave node), which we will use for the image creation, execute the following command: python lambda_instance_manager.py --image-creation --project-name  ~okeanos project name  --auth-token  ~okeanos auth token \n(Note that no services will be started on these two hosts as we are using the --image-creation flag.)  After  lambda_instance_manager.py  finishes a Lambda master and slave nodes will be available on your cyclades account. You will be able to login using ssh from the system, where you run the  lambda_instance_manager.py  command.  To be able to upload the Lambda slave image to the ~okeanos cloud, you must assign a public IP to the slave node 1  (the master node already has a public IP by default).  Login (using ssh) onto the Lambda master and slave nodes respectively. On each host, execute: rm -f /root/*   snf-image-creator /  snf-image-creator  will run and bundle the host. Insert the required image properties, and ~okeanos credentials, to register your new image on the ~okeanos cloud. The recommended Lambda master image name to use is:  Lambda master YYYYMMDD  (e.g.  Lambda master 20151219 ). The recommended Lambda slave image name to use is:  Lambda slave YYYYMMDD  (e.g.  Lambda slave 20151219 ). For more information about using snf-image-creator, consult the  relevant documentation .  On the source code repository edit the  webapp/ansible/roles/service-vm/templates/settings.py.j2  file, changing the  MASTER_IMAGE_ID  and  SLAVE_IMAGE_ID  variables to the new image ids 2  for your changes to take effect.    1  There is a bug that causes a public IP not to attach correctly, if the node has previously been attached to a private network. In that case, de-attach the Lambda slave node from the lambda-vpn, attach the public IP, then re-attach it to the lambda-vpn.  2  To get the ~okeanos image ids, one can issue  kamaki image list .", 
             "title": "Steps"
+        }, 
+        {
+            "location": "/admin/messages/", 
+            "text": "Messages on the central service\n\n\nDescription\n\n\nThis guide describes how to publish a message on the \nCentral service\n of the service. This guide is intended to be used only by the administrators of the central service VM. \n\n\n\n\nThe administrator of the central service must first login the machine using ssh and become the \nroot\n user. From the command line provide the following command \n\n\n$ cd /var/www/okeanos-LoD/central_service/app/frontend\n\n\n\n\nto navigate to the appropriate folder. In order to publish (or remove) a message from the central service web interface the python script \nadmin-message.py\n (located in the aforementioned folder) may be used. \n\n\nThe following command prints out the help message related to this script:\n\n\n$ python admin-message.py --help\nusage: admin-message.py [-h] [--action {set,remove}] [--title TITLE]\n                        [--message MESSAGE]\n                        [--type {danger,warning,info,success}]\n\nAdmin Message\n\noptional arguments:\n  -h, --help            show this help message and exit\n  --action {set,remove}\n                        set or remove an admin message (default: set)\n  --title TITLE         title of the admin message (used only with set action,\n                        default:\nTitle\n)\n  --message MESSAGE     admin message (used only with set action,\n                        default=\nMessage\n)\n  --type {danger,warning,info,success}\n                        the type of the message (used only with set action,\n                        default=\ninfo\n)\n\n\n\n\nIn order to add a new message to the central web interface the \nset\n action should be used. The \n--title\n and \n--message\n arguments accept text as their arguments. Based on the the message itself (its contents) an appropriate \n--type\n should be used alongside (\ninfo\n for blue background, \nsuccess\n for green, \nwarning\n for orange and \ndanger\n for red).\n\n\nThe following command will generate a \"Lorem Ipsum\" message on the central web interface\nas it is shown also on the screenshot picture below. \n\n\n$ python admin-message.py --action set \\\n  --title \nLorem Ipsum\n \\\n  --message \nLorem Ipsum is ...\n \\\n  --type danger\n\n\n\n\nResult:\n\n\n\n\nTo remove the message the \nremove\n action should be used (without any further arguments), like so:\n\n\n$ python admin-message.py --action remove", 
+            "title": "Service Messages"
+        }, 
+        {
+            "location": "/admin/messages/#messages-on-the-central-service", 
+            "text": "", 
+            "title": "Messages on the central service"
+        }, 
+        {
+            "location": "/admin/messages/#description", 
+            "text": "This guide describes how to publish a message on the  Central service  of the service. This guide is intended to be used only by the administrators of the central service VM.", 
+            "title": "Description"
         }, 
         {
             "location": "/about/license/", 

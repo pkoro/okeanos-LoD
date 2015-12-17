@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Service VM - λ on Demand</title>
+  <title>Lambda nodes images - λ on Demand</title>
   
 
   <link rel="shortcut icon" href="../../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Service VM";
+    var mkdocs_page_name = "Lambda nodes images";
   </script>
   
   <script src="../../js/jquery-2.1.1.min.js"></script>
@@ -285,16 +285,23 @@
           
             <li>
     <ul class="subnav">
-    <li><span>Images</span></li>
+    <li><span>Administration</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../service/">Service VM image</a>
+        
+    </li>
 
         
             
     <li class="toctree-l1 current">
-        <a class="current" href="./">Service VM</a>
+        <a class="current" href="./">Lambda nodes images</a>
         
             <ul>
             
-                <li class="toctree-l3"><a href="#service-vm-image-creation">Service VM image creation</a></li>
+                <li class="toctree-l3"><a href="#lambda-instance-images-creation">Lambda Instance images creation</a></li>
                 
                     <li><a class="toctree-l4" href="#description">Description</a></li>
                 
@@ -308,7 +315,7 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../lambda/">Lambda nodes</a>
+        <a class="" href="../messages/">Service Messages</a>
         
     </li>
 
@@ -345,11 +352,11 @@
     
       
         
-          <li>Images &raquo;</li>
+          <li>Administration &raquo;</li>
         
       
     
-    <li>Service VM</li>
+    <li>Lambda nodes images</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -359,26 +366,26 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="service-vm-image-creation">Service VM image creation</h1>
+                <h1 id="lambda-instance-images-creation">Lambda Instance images creation</h1>
 <h2 id="description">Description</h2>
-<p>This guide describes how to generate and publish a Lambda service VM images on the ~okeanos public cloud. In order to create the image file a custom script that uses <code>snf-image-creator</code> in the backend has been developed.</p>
-<h3 id="the-create_imagesh-shell-script">The create_image.sh shell script</h3>
-<p>The script responsible for creating a Service VM image. It must be run on a service VM. It sets up the default site, enables the ansible-vm-init init script, then runs snf-image-creator, to bundle the host. We will use this script in Step 6 below. </p>
+<p>This guide describes how to generate and publish Lambda master and slaves images on the ~okeanos public cloud.</p>
+<p>In the steps that follow we will use the <code>snf-image-creator</code> tool to create and publish the images.</p>
 <h2 id="steps">Steps</h2>
 <ol>
 <li>Install the Fokia library. To install Fokia and its dependencies, consult the <a href="../../fokia/usage/">installation guide</a>.</li>
-<li>Navigate to the Service VM manager folder: <code>cd &lt;project_directory&gt;/webapp/manager</code>.</li>
-<li>Create a new Service VM, by issuing the following command:
-<code>python service_vm_manager.py --action image_creation --project-name &lt;~okeanos project name&gt; --auth-token &lt;~okeanos auth token&gt;</code></li>
-<li>After the service_vm_manager finishes successfully, login to the created VM using ssh.</li>
-<li>Navigate to the following folder on the Service VM: 
-<code>cd /var/www/okeanos-LoD/webapp/image</code></li>
-<li>Execute <code>./create_image.sh</code>.</li>
-<li>snf-image-creator will run behind the scenes to bundle the host. Insert the required image properties, and
-~okeanos credentials, to register your new image on the ~okeanos cloud. </li>
+<li>Navigate to the fokia library folder: <code>cd &lt;project_directory&gt;/core/fokia</code>.</li>
+<li>In order to bootstrap a minimal Lambda Instance (1 master and 1 slave node), which we will use for the image creation, execute the following command:
+<code>python lambda_instance_manager.py --image-creation --project-name &lt;~okeanos project name&gt; --auth-token &lt;~okeanos auth token&gt;</code>
+(Note that no services will be started on these two hosts as we are using the --image-creation flag.)</li>
+<li>After <code>lambda_instance_manager.py</code> finishes a Lambda master and slave nodes will be available on your cyclades account. You will be able to login using ssh from the system, where you run the <code>lambda_instance_manager.py</code> command.</li>
+<li>To be able to upload the Lambda slave image to the ~okeanos cloud, you must assign a public IP to the slave node<sup><a href="#footnote1">1</a></sup> (the master node already has a public IP by default).</li>
+<li>Login (using ssh) onto the Lambda master and slave nodes respectively. On each host, execute:
+<code>rm -f /root/* &amp;&amp; snf-image-creator /</code></li>
+<li><code>snf-image-creator</code> will run and bundle the host. Insert the required image properties, and ~okeanos credentials, to register your new image on the ~okeanos cloud. The recommended Lambda master image name to use is: <code>Lambda master YYYYMMDD</code> (e.g. <code>Lambda master 20151219</code>). The recommended Lambda slave image name to use is: <code>Lambda slave YYYYMMDD</code> (e.g. <code>Lambda slave 20151219</code>). For more information about using snf-image-creator, consult the <a href="https://www.synnefo.org/docs/snf-image-creator/latest/usage.html#dialog-based-version">relevant documentation</a>.</li>
+<li>On the source code repository edit the <code>webapp/ansible/roles/service-vm/templates/settings.py.j2</code> file, changing the <code>MASTER_IMAGE_ID</code> and <code>SLAVE_IMAGE_ID</code> variables to the new image ids<sup><a href="#footnote2">2</a></sup> for your changes to take effect. </li>
 </ol>
-<p>The recommended image name to use is <code>Lambda Service VM YYYYMMDD</code> (e.g. <code>Lambda Service VM 20151219</code>). </p>
-<p>For more information about using snf-image-creator, consult the <a href="https://www.synnefo.org/docs/snf-image-creator/latest/usage.html#dialog-based-version">relevant documentation</a>.</p>
+<p><a name="footnote1"><sup>1</sup></a> There is a bug that causes a public IP not to attach correctly, if the node has previously been attached to a private network. In that case, de-attach the Lambda slave node from the lambda-vpn, attach the public IP, then re-attach it to the lambda-vpn.</p>
+<p><a name="footnote2"><sup>2</sup></a> To get the ~okeanos image ids, one can issue <code>kamaki image list</code>.</p>
               
             </div>
           </div>
@@ -386,10 +393,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../lambda/" class="btn btn-neutral float-right" title="Lambda nodes"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../messages/" class="btn btn-neutral float-right" title="Service Messages"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../../central-api/API_lambda_applications/" class="btn btn-neutral" title="Lamdba Applications API calls"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../service/" class="btn btn-neutral" title="Service VM image"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -415,10 +422,10 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../../central-api/API_lambda_applications/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../service/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../lambda/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../messages/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
